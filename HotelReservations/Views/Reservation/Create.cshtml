@@ -1,0 +1,66 @@
+﻿@model HotelReservations.ViewModels.ReservationViewModel
+
+<h2>Create Reservation</h2>
+
+@if (ViewBag.SuccessMessage != null)
+{
+    <div class="success-message">
+        @ViewBag.SuccessMessage
+    </div>
+}
+
+<script>
+    function calculateTotalPrice() {
+        var pricePerNight = parseFloat(document.getElementById('PricePerNight').textContent);
+        var numberOfNights = parseInt(document.getElementById('NumberOfNights').value);
+        var totalPrice = pricePerNight * numberOfNights;
+
+        document.getElementById('TotalPrice').textContent = totalPrice.toFixed(2);
+    }
+
+    function validateNumberOfNights() {
+        var numberOfNightsInput = document.getElementById('NumberOfNights');
+        var numberOfNights = parseInt(numberOfNightsInput.value);
+
+        if (numberOfNights < 0) {
+            numberOfNightsInput.setCustomValidity('Number of nights cannot be below 0');
+        } else {
+            numberOfNightsInput.setCustomValidity('');
+        }
+    }
+</script>
+
+@using (Html.BeginForm("Create", "Reservation", FormMethod.Post))
+{
+    @Html.Hidden("roomId", @Html.DisplayFor(model => model.RoomNumber))
+    <div>
+        <label for="RoomNumber">Room Number:</label>
+        @Html.DisplayFor(model => model.RoomNumber)
+    </div>
+    <div>
+        <label for="SelectedCustomerId">Customer Name:</label>
+        @Html.DropDownListFor(model => model.SelectedCustomerId, Model.CustomerList, "Select a customer")
+    </div>
+    <div>
+        <label for="ReservationDate">Reservation Start Date:</label>
+        <input type="date" id="ReservationDate" name="ReservationDate" />
+    </div>
+    <div>
+        <label for="NumberOfNights">Number Of Nights:</label>
+        <input type="number" id="NumberOfNights" name="NumberOfNights" min="0" onchange="calculateTotalPrice(); validateNumberOfNights();" />
+    </div>
+    <div>
+        <label for="PricePerNight">Price Per Night:</label>
+        <span id="PricePerNight">@Model.PricePerNight</span>
+    </div>
+    <div>
+        <label for="TotalPrice">Total Price:</label>
+        <span id="TotalPrice">@Model.TotalPrice</span>
+    </div>
+    <div>
+        <input type="submit" value="Create" />
+    </div>
+    <p>
+        @Html.ActionLink("Back to List", "Index", "Room")
+    </p>
+}
